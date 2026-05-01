@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital World Clock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .clock {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .timezone {
+            margin: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Digital World Clock</h1>
+    <div id="clocks"></div>
+    <script>
+        const timeZones = [
+            { name: 'UTC', offset: 0 },
+            { name: 'EST', offset: -5 },
+            { name: 'CST', offset: -6 },
+            { name: 'MST', offset: -7 },
+            { name: 'PST', offset: -8 },
+            { name: 'GMT', offset: 0 },
+            { name: 'CET', offset: 1 },
+            { name: 'IST', offset: 5.5 },
+            { name: 'JST', offset: 9 }
+        ];
+
+        function updateClocks() {
+            const clocksDiv = document.getElementById('clocks');
+            clocksDiv.innerHTML = '';
+
+            timeZones.forEach(zone => {
+                const date = new Date();
+                const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+                const localTime = new Date(utc + (3600000 * zone.offset));
+                const timeString = localTime.toISOString().substring(11, 19);
+
+                const clockDiv = document.createElement('div');
+                clockDiv.className = 'timezone';
+                clockDiv.innerHTML = `<strong>${zone.name}</strong>: ${timeString}`;
+                clocksDiv.appendChild(clockDiv);
+            });
+        }
+
+        updateClocks();
+        setInterval(updateClocks, 1000);
+    </script>
+</body>
+</html>
