@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevFlow - Developer Productivity Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.3) 0%, transparent 50%);
+      animation: backgroundShift 20s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes backgroundShift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      border-radius: 15px;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .nav-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Dashboard Grid */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .widget {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .widget:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+
+    .widget h3 {
+      margin-bottom: 1rem;
+      color: #667eea;
+      border-bottom: 2px solid #764ba2;
+      padding-bottom: 0.5rem;
+    }
+
+    /* Task Manager */
+    .task-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .task-input input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .task-input button {
+      padding: 0.5rem 1rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .task-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .task-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .task-item.completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    /* Code Snippet Manager */
+    .snippet-form {
+      margin-bottom: 1rem;
+    }
+
+    .snippet-form input,
+    .snippet-form textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .snippet-form textarea {
+      height: 80px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .snippet-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .snippet-item {
+      background: #f8f9fa;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 5px;
+      border-left: 4px solid #667eea;
+    }
+
+    .snippet-item h4 {
+      margin-bottom: 0.25rem;
+      color: #667eea;
+    }
+
+    .snippet-item pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 0.5rem;
+      border-radius: 3px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+    }
+
+    /* Project Ideas Generator */
+    .idea-generator {
+      text-align: center;
+    }
+
+    .generate-btn {
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin: 1rem 0;
+      transition: transform 0.3s;
+    }
+
+    .generate-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .idea-display {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 10px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-style: italic;
+    }
+
+    /* Skill Tracker */
+    .skill-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .skill-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .skill-bar span {
+      min-width: 80px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 10px;
+      transition: width 1s ease;
+    }
+
+    /* Interview Prep */
+    .interview-questions {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .question-item {
+      background: #f8f9fa;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 5px;
+      border-left: 4px solid #667eea;
+    }
+
+    .question-item h4 {
+      margin-bottom: 0.25rem;
+    }
+
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+
+    .fab:hover {
+      transform: scale(1.1);
+    }
+
+    .fab::before {
+      content: '+';
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 1rem;
+      color: #667eea;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .modal-content button {
+      padding: 0.5rem 1rem;
+      margin: 0.25rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-content .save-btn {
+      background: #667eea;
+      color: white;
+    }
+
+    .modal-content .cancel-btn {
+      background: #ccc;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .widget {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    /* Unique Features */
+    .code-editor {
+      background: #2d3748;
+      border-radius: 10px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      color: #e2e8f0;
+      border: 1px solid #4a5568;
+      resize: vertical;
+      min-height: 150px;
+    }
+
+    .contribution-graph {
+      display: grid;
+      grid-template-columns: repeat(53, 1fr);
+      gap: 2px;
+      margin: 1rem 0;
+    }
+
+    .contribution-day {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      background: #ebedf0;
+      transition: all 0.3s;
+    }
+
+    .contribution-day.active {
+      background: #9be9a8;
+    }
+
+    .contribution-day.active.high {
+      background: #40c463;
+    }
+
+    .contribution-day.active.higher {
+      background: #30a14e;
+    }
+
+    .contribution-day.active.highest {
+      background: #216e39;
+    }
+
+    .pomodoro-timer {
+      text-align: center;
+      background: linear-gradient(135deg, #ff9a9e, #fecfef);
+      border-radius: 15px;
+      padding: 2rem;
+      color: #333;
+    }
+
+    .timer-display {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .timer-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.3s;
+    }
+
+    .timer-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .start-btn { background: #4ade80; color: white; }
+    .pause-btn { background: #f59e0b; color: white; }
+    .reset-btn { background: #ef4444; color: white; }
+
+    .voice-input {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .voice-btn {
+      padding: 0.5rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .voice-btn.recording {
+      background: #ef4444;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .mood-tracker {
+      display: flex;
+      justify-content: space-around;
+      margin: 1rem 0;
+    }
+
+    .mood-btn {
+      padding: 1rem;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: transform 0.3s;
+    }
+
+    .mood-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .productivity-analytics {
+      margin: 1rem 0;
+    }
+
+    .analytics-bar {
+      display: flex;
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+
+    .analytics-bar span {
+      min-width: 100px;
+    }
+
+    .analytics-fill {
+      flex: 1;
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-left: 1rem;
+    }
+
+    .analytics-progress {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 10px;
+      transition: width 2s ease;
+    }
+
+    .code-suggestions {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .suggestion-item {
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .suggestion-item:hover {
+      background: #e9ecef;
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">DevFlow</div>
+      <div class="nav-links">
+        <button class="nav-btn" onclick="showSection('dashboard')">Dashboard</button>
+        <button class="nav-btn" onclick="showSection('portfolio')">Portfolio</button>
+        <button class="nav-btn" onclick="showSection('tools')">Tools</button>
+      </div>
+    </header>
+
+    <div id="dashboard-section">
+      <h1 style="color: white; text-align: center; margin-bottom: 2rem;">Developer Productivity Dashboard</h1>
+
+      <div class="dashboard">
+        <!-- Task Manager -->
+        <div class="widget">
+          <h3>📋 Task Manager</h3>
+          <div class="task-input">
+            <input type="text" id="task-input" placeholder="Add a new task...">
+            <button onclick="addTask()">Add</button>
+          </div>
+          <div class="task-list" id="task-list"></div>
+        </div>
+
+        <!-- Code Snippet Manager -->
+        <div class="widget">
+          <h3>💻 Code Snippets</h3>
+          <div class="snippet-form">
+            <input type="text" id="snippet-title" placeholder="Snippet title...">
+            <textarea id="snippet-code" placeholder="Paste your code here..."></textarea>
+            <button onclick="addSnippet()">Save Snippet</button>
+          </div>
+          <div class="snippet-list" id="snippet-list"></div>
+        </div>
+
+        <!-- Project Ideas Generator -->
+        <div class="widget">
+          <h3>🚀 Project Ideas</h3>
+          <div class="idea-generator">
+            <button class="generate-btn" onclick="generateIdea()">Generate Idea</button>
+            <div class="idea-display" id="idea-display">
+              Click to generate your next project idea!
+            </div>
+          </div>
+        </div>
+
+        <!-- Skill Tracker -->
+        <div class="widget">
+          <h3>📊 Skill Tracker</h3>
+          <div class="skill-bars">
+            <div class="skill-bar">
+              <span>JavaScript</span>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%"></div>
+              </div>
+              <span>85%</span>
+            </div>
+            <div class="skill-bar">
+              <span>React</span>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%"></div>
+              </div>
+              <span>80%</span>
+            </div>
+            <div class="skill-bar">
+              <span>Node.js</span>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%"></div>
+              </div>
+              <span>75%</span>
+            </div>
+            <div class="skill-bar">
+              <span>CSS</span>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%"></div>
+              </div>
+              <span>90%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interview Prep -->
+        <div class="widget">
+          <h3>🎯 Interview Prep</h3>
+          <div class="interview-questions" id="interview-questions">
+            <div class="question-item">
+              <h4>What is closure in JavaScript?</h4>
+              <p>A closure is a function that has access to its own scope, the outer function's scope, and the global scope.</p>
+            </div>
+            <div class="question-item">
+              <h4>Explain event delegation</h4>
+              <p>Event delegation is a technique where you attach a single event listener to a parent element to handle events for multiple child elements.</p>
+            </div>
+            <div class="question-item">
+              <h4>What is the difference between let, const, and var?</h4>
+              <p>let and const are block-scoped, var is function-scoped. const cannot be reassigned, let can be.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Coding Challenge -->
+        <div class="widget">
+          <h3>💡 Daily Challenge</h3>
+          <div id="daily-challenge">
+            <h4>Today's Challenge:</h4>
+            <p id="challenge-text">Write a function that reverses a string without using built-in reverse methods.</p>
+            <textarea id="challenge-solution" placeholder="Write your solution here..." style="width: 100%; height: 80px; margin: 0.5rem 0;"></textarea>
+            <button onclick="checkSolution()">Check Solution</button>
+            <div id="solution-feedback" style="margin-top: 0.5rem;"></div>
+          </div>
+        </div>
+
+        <!-- Real-time Code Editor -->
+        <div class="widget">
+          <h3>⚡ Live Code Editor</h3>
+          <textarea class="code-editor" id="code-editor" placeholder="Write your JavaScript code here...">// Try this:
+function greet(name) {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet('Developer'));</textarea>
+          <div class="voice-input">
+            <button class="voice-btn" id="voice-btn" onclick="startVoiceInput()" title="Voice Input">🎤</button>
+            <button onclick="runCode()" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Run Code</button>
+          </div>
+          <div id="code-output" style="background: #2d3748; color: #e2e8f0; padding: 0.5rem; border-radius: 5px; margin-top: 0.5rem; min-height: 50px; font-family: 'Courier New', monospace;"></div>
+        </div>
+
+        <!-- GitHub-style Contribution Graph -->
+        <div class="widget">
+          <h3>📊 Contribution Graph</h3>
+          <div class="contribution-graph" id="contribution-graph"></div>
+          <p style="text-align: center; margin-top: 0.5rem; color: #666;">Last 53 weeks of coding activity</p>
+        </div>
+
+        <!-- Pomodoro Timer -->
+        <div class="widget">
+          <h3>⏱️ Pomodoro Timer</h3>
+          <div class="pomodoro-timer">
+            <div class="timer-display" id="timer-display">25:00</div>
+            <div class="timer-controls">
+              <button class="timer-btn start-btn" onclick="startTimer()">Start</button>
+              <button class="timer-btn pause-btn" onclick="pauseTimer()">Pause</button>
+              <button class="timer-btn reset-btn" onclick="resetTimer()">Reset</button>
+            </div>
+            <div style="margin-top: 1rem;">
+              <button onclick="setWorkMode()" style="margin: 0 0.5rem; padding: 0.3rem 0.8rem; background: #667eea; color: white; border: none; border-radius: 15px; cursor: pointer;">Work (25min)</button>
+              <button onclick="setBreakMode()" style="margin: 0 0.5rem; padding: 0.3rem 0.8rem; background: #4ade80; color: white; border: none; border-radius: 15px; cursor: pointer;">Break (5min)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mood Tracker -->
+        <div class="widget">
+          <h3>😊 Mood Tracker</h3>
+          <div class="mood-tracker">
+            <button class="mood-btn" onclick="trackMood('😢')">😢</button>
+            <button class="mood-btn" onclick="trackMood('😐')">😐</button>
+            <button class="mood-btn" onclick="trackMood('😊')">😊</button>
+            <button class="mood-btn" onclick="trackMood('😄')">😄</button>
+            <button class="mood-btn" onclick="trackMood('🤩')">🤩</button>
+          </div>
+          <div id="mood-history" style="margin-top: 1rem; text-align: center;"></div>
+        </div>
+
+        <!-- Productivity Analytics -->
+        <div class="widget">
+          <h3>📈 Productivity Analytics</h3>
+          <div class="productivity-analytics">
+            <div class="analytics-bar">
+              <span>Tasks Completed</span>
+              <div class="analytics-fill">
+                <div class="analytics-progress" id="tasks-progress" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="analytics-bar">
+              <span>Code Written</span>
+              <div class="analytics-fill">
+                <div class="analytics-progress" id="code-progress" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="analytics-bar">
+              <span>Focus Time</span>
+              <div class="analytics-fill">
+                <div class="analytics-progress" id="focus-progress" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Code Suggestions -->
+        <div class="widget">
+          <h3>🤖 AI Code Suggestions</h3>
+          <input type="text" id="code-query" placeholder="Describe what you want to code..." style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+          <button onclick="getSuggestions()" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Get Suggestions</button>
+          <div class="code-suggestions" id="code-suggestions"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portfolio Section (Hidden by default) -->
+    <div id="portfolio-section" style="display: none;">
+      <h1 style="color: white; text-align: center; margin-bottom: 2rem;">Portfolio Showcase</h1>
+      <div class="dashboard">
+        <div class="widget">
+          <h3>🎨 Brand Identity Projects</h3>
+          <p>View my brand identity and logo design work</p>
+          <a href="brand.html" style="color: #667eea; text-decoration: none;">View Projects →</a>
+        </div>
+        <div class="widget">
+          <h3>📱 Responsive Web Design</h3>
+          <p>Explore responsive and interactive web experiences</p>
+          <a href="responsive.html" style="color: #667eea; text-decoration: none;">View Projects →</a>
+        </div>
+        <div class="widget">
+          <h3>🚀 Full Stack Applications</h3>
+          <p>Complete web applications with modern technologies</p>
+          <p style="color: #666; font-style: italic;">Coming Soon...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools Section (Hidden by default) -->
+    <div id="tools-section" style="display: none;">
+      <h1 style="color: white; text-align: center; margin-bottom: 2rem;">Developer Tools</h1>
+      <div class="dashboard">
+        <div class="widget">
+          <h3>🔧 Code Formatter</h3>
+          <textarea id="code-input" placeholder="Paste your code here..." style="width: 100%; height: 150px;"></textarea>
+          <button onclick="formatCode()" style="margin-top: 0.5rem;">Format Code</button>
+          <pre id="formatted-code" style="background: #f8f9fa; padding: 0.5rem; margin-top: 0.5rem; border-radius: 5px;"></pre>
+        </div>
+        <div class="widget">
+          <h3>📊 Performance Analyzer</h3>
+          <button onclick="analyzePerformance()" style="margin-bottom: 1rem;">Run Analysis</button>
+          <div id="performance-results"></div>
+        </div>
+        <div class="widget">
+          <h3>🎨 Color Palette Generator</h3>
+          <button onclick="generatePalette()" style="margin-bottom: 1rem;">Generate Palette</button>
+          <div id="color-palette" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <div class="fab" onclick="showQuickAddModal()"></div>
+
+  <!-- Quick Add Modal -->
+  <div class="modal" id="quick-add-modal">
+    <div class="modal-content">
+      <h3>Quick Add</h3>
+      <input type="text" id="quick-task" placeholder="Add a quick task...">
+      <textarea id="quick-snippet" placeholder="Add a code snippet..." style="height: 80px;"></textarea>
+      <button class="save-btn" onclick="quickAdd()">Add</button>
+      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Navigation
+    function showSection(section) {
+      document.getElementById('dashboard-section').style.display = section === 'dashboard' ? 'block' : 'none';
+      document.getElementById('portfolio-section').style.display = section === 'portfolio' ? 'block' : 'none';
+      document.getElementById('tools-section').style.display = section === 'tools' ? 'block' : 'none';
+    }
+
+    // Task Manager
+    let tasks = JSON.parse(localStorage.getItem('devflow-tasks')) || [];
+
+    function addTask() {
+      const input = document.getElementById('task-input');
+      if (input.value.trim()) {
+        tasks.push({ text: input.value, completed: false });
+        input.value = '';
+        saveTasks();
+        renderTasks();
+      }
+    }
+
+    function toggleTask(index) {
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks();
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    }
+
+    function saveTasks() {
+      localStorage.setItem('devflow-tasks', JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      const taskList = document.getElementById('task-list');
+      taskList.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item' + (task.completed ? ' completed' : '');
+        taskItem.innerHTML = `
+          <span onclick="toggleTask(${index})">${task.text}</span>
+          <button onclick="deleteTask(${index})" style="background: #ff6b6b; color: white; border: none; border-radius: 3px; padding: 0.2rem 0.5rem; cursor: pointer;">×</button>
+        `;
+        taskList.appendChild(taskItem);
+      });
+    }
+
+    // Code Snippet Manager
+    let snippets = JSON.parse(localStorage.getItem('devflow-snippets')) || [];
+
+    function addSnippet() {
+      const title = document.getElementById('snippet-title');
+      const code = document.getElementById('snippet-code');
+      if (title.value.trim() && code.value.trim()) {
+        snippets.push({ title: title.value, code: code.value });
+        title.value = '';
+        code.value = '';
+        saveSnippets();
+        renderSnippets();
+      }
+    }
+
+    function saveSnippets() {
+      localStorage.setItem('devflow-snippets', JSON.stringify(snippets));
+    }
+
+    function renderSnippets() {
+      const snippetList = document.getElementById('snippet-list');
+      snippetList.innerHTML = '';
+      snippets.forEach(snippet => {
+        const snippetItem = document.createElement('div');
+        snippetItem.className = 'snippet-item';
+        snippetItem.innerHTML = `
+          <h4>${snippet.title}</h4>
+          <pre>${snippet.code}</pre>
+        `;
+        snippetList.appendChild(snippetItem);
+      });
+    }
+
+    // Project Ideas Generator
+    const projectIdeas = [
+      "Build a personal finance tracker with expense categorization",
+      "Create a habit tracking app with streak counters and reminders",
+      "Develop a recipe finder that suggests meals based on available ingredients",
+      "Make a local event discovery app with map integration",
+      "Build a collaborative coding platform with real-time editing",
+      "Create a language learning app with spaced repetition",
+      "Develop a smart home dashboard for IoT devices",
+      "Make a portfolio website with animated project showcases",
+      "Build a weather app with clothing suggestions",
+      "Create a book recommendation system based on reading habits"
+    ];
+
+    function generateIdea() {
+      const randomIdea = projectIdeas[Math.floor(Math.random() * projectIdeas.length)];
+      document.getElementById('idea-display').textContent = randomIdea;
+    }
+
+    // Daily Coding Challenge
+    function checkSolution() {
+      const solution = document.getElementById('challenge-solution').value;
+      const feedback = document.getElementById('solution-feedback');
+
+      // Simple check for string reverse function
+      if (solution.includes('function') && solution.includes('reverse') && solution.includes('for') || solution.includes('split') && solution.includes('reverse')) {
+        feedback.innerHTML = '<span style="color: green;">✓ Great solution! You\'ve implemented string reversal correctly.</span>';
+      } else {
+        feedback.innerHTML = '<span style="color: orange;">⚠ Try again! Look for ways to iterate through the string or use array methods.</span>';
+      }
+    }
+
+    // Developer Tools
+    function formatCode() {
+      const code = document.getElementById('code-input').value;
+      // Simple formatting - in a real app, you'd use a proper formatter
+      const formatted = code.replace(/;/g, ';\n').replace(/{/g, '{\n  ').replace(/}/g, '\n}');
+      document.getElementById('formatted-code').textContent = formatted;
+    }
+
+    function analyzePerformance() {
+      const results = document.getElementById('performance-results');
+      const start = performance.now();
+      // Simulate some work
+      for (let i = 0; i < 1000000; i++) {
+        Math.sqrt(i);
+      }
+      const end = performance.now();
+      results.innerHTML = `Performance test completed in ${(end - start).toFixed(2)}ms`;
+    }
+
+    function generatePalette() {
+      const palette = document.getElementById('color-palette');
+      palette.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const color = '#' + Math.floor(Math.random()*16777215).toString(16);
+        const colorDiv = document.createElement('div');
+        colorDiv.style.width = '50px';
+        colorDiv.style.height = '50px';
+        colorDiv.style.background = color;
+        colorDiv.style.borderRadius = '5px';
+        colorDiv.title = color;
+        palette.appendChild(colorDiv);
+      }
+    }
+
+    // Quick Add Modal
+    function showQuickAddModal() {
+      document.getElementById('quick-add-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('quick-add-modal').style.display = 'none';
+    }
+
+    function quickAdd() {
+      const task = document.getElementById('quick-task').value;
+      const snippet = document.getElementById('quick-snippet').value;
+
+      if (task.trim()) {
+        tasks.push({ text: task, completed: false });
+        saveTasks();
+        renderTasks();
+      }
+
+      if (snippet.trim()) {
+        snippets.push({ title: 'Quick Snippet', code: snippet });
+        saveSnippets();
+        renderSnippets();
+      }
+
+      document.getElementById('quick-task').value = '';
+      document.getElementById('quick-snippet').value = '';
+      closeModal();
+    }
+
+    // Initialize
+    renderTasks();
+    renderSnippets();
+    generateContributionGraph();
+    updateAnalytics();
+
+    // Real-time Code Editor
+    let recognition = null;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('code-editor').value += transcript;
+      };
+
+      recognition.onend = function() {
+        document.getElementById('voice-btn').classList.remove('recording');
+      };
+    }
+
+    function startVoiceInput() {
+      if (recognition) {
+        document.getElementById('voice-btn').classList.add('recording');
+        recognition.start();
+      } else {
+        alert('Voice input not supported in this browser');
+      }
+    }
+
+    function runCode() {
+      const code = document.getElementById('code-editor').value;
+      const output = document.getElementById('code-output');
+
+      try {
+        // Create a new function to run the code in isolation
+        const result = new Function(code)();
+        output.textContent = result !== undefined ? result : 'Code executed successfully';
+      } catch (error) {
+        output.textContent = 'Error: ' + error.message;
+      }
+    }
+
+    // GitHub-style Contribution Graph
+    function generateContributionGraph() {
+      const graph = document.getElementById('contribution-graph');
+      graph.innerHTML = '';
+
+      for (let i = 0; i < 371; i++) { // 53 weeks * 7 days
+        const day = document.createElement('div');
+        day.className = 'contribution-day';
+
+        // Random activity level (0-4)
+        const activity = Math.random();
+        if (activity > 0.3) {
+          day.classList.add('active');
+          if (activity > 0.6) day.classList.add('high');
+          if (activity > 0.8) day.classList.add('higher');
+          if (activity > 0.95) day.classList.add('highest');
+        }
+
+        graph.appendChild(day);
+      }
+    }
+
+    // Pomodoro Timer
+    let timerInterval = null;
+    let timeLeft = 25 * 60; // 25 minutes in seconds
+    let isWorkMode = true;
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      document.getElementById('timer-display').textContent =
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      if (timerInterval) return;
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          alert(isWorkMode ? 'Work session complete! Take a break.' : 'Break time over! Back to work.');
+          if (isWorkMode) {
+            setBreakMode();
+          } else {
+            setWorkMode();
+          }
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timeLeft = isWorkMode ? 25 * 60 : 5 * 60;
+      updateTimerDisplay();
+    }
+
+    function setWorkMode() {
+      isWorkMode = true;
+      timeLeft = 25 * 60;
+      updateTimerDisplay();
+      document.querySelector('.pomodoro-timer').style.background = 'linear-gradient(135deg, #ff9a9e, #fecfef)';
+    }
+
+    function setBreakMode() {
+      isWorkMode = false;
+      timeLeft = 5 * 60;
+      updateTimerDisplay();
+      document.querySelector('.pomodoro-timer').style.background = 'linear-gradient(135deg, #a8edea, #fed6e3)';
+    }
+
+    // Mood Tracker
+    let moodHistory = JSON.parse(localStorage.getItem('devflow-mood')) || [];
+
+    function trackMood(mood) {
+      const today = new Date().toDateString();
+      const existingEntry = moodHistory.find(entry => entry.date === today);
+
+      if (existingEntry) {
+        existingEntry.mood = mood;
+      } else {
+        moodHistory.push({ date: today, mood: mood });
+      }
+
+      localStorage.setItem('devflow-mood', JSON.stringify(moodHistory));
+      updateMoodHistory();
+    }
+
+    function updateMoodHistory() {
+      const history = document.getElementById('mood-history');
+      if (moodHistory.length > 0) {
+        const latest = moodHistory[moodHistory.length - 1];
+        history.innerHTML = `<p>Today's mood: ${latest.mood}</p>`;
+      }
+    }
+
+    // Productivity Analytics
+    function updateAnalytics() {
+      const completedTasks = tasks.filter(task => task.completed).length;
+      const taskProgress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
+
+      document.getElementById('tasks-progress').style.width = taskProgress + '%';
+
+      // Simulate code progress based on snippets
+      const codeProgress = Math.min(snippets.length * 10, 100);
+      document.getElementById('code-progress').style.width = codeProgress + '%';
+
+      // Simulate focus time based on timer usage
+      const focusProgress = Math.min(Math.floor(Math.random() * 60) + 20, 100);
+      document.getElementById('focus-progress').style.width = focusProgress + '%';
+    }
+
+    // AI Code Suggestions (Mock)
+    function getSuggestions() {
+      const query = document.getElementById('code-query').value.toLowerCase();
+      const suggestions = document.getElementById('code-suggestions');
+
+      const suggestionData = {
+        'function': [
+          'function calculateSum(a, b) { return a + b; }',
+          'function isEven(num) { return num % 2 === 0; }',
+          'function getRandomColor() { return "#" + Math.floor(Math.random()*16777215).toString(16); }'
+        ],
+        'array': [
+          'const filtered = array.filter(item => item > 5);',
+          'const mapped = array.map(item => item * 2);',
+          'const sorted = array.sort((a, b) => a - b);'
+        ],
+        'object': [
+          'const person = { name: "John", age: 30 };',
+          'Object.keys(obj).forEach(key => console.log(key));',
+          'const { name, age } = person;'
+        ],
+        'async': [
+          'async function fetchData() { const response = await fetch(url); return response.json(); }',
+          'const data = await fetchData();',
+          'Promise.all([promise1, promise2]).then(results => console.log(results));'
+        ]
+      };
+
+      let relevantSuggestions = [];
+      for (const [key, suggestions] of Object.entries(suggestionData)) {
+        if (query.includes(key)) {
+          relevantSuggestions = suggestions;
+          break;
+        }
+      }
+
+      if (relevantSuggestions.length === 0) {
+        relevantSuggestions = suggestionData['function']; // Default suggestions
+      }
+
+      suggestions.innerHTML = relevantSuggestions.map(suggestion =>
+        `<div class="suggestion-item" onclick="useSuggestion('${suggestion.replace(/'/g, "\\'")}')">${suggestion}</div>`
+      ).join('');
+    }
+
+    function useSuggestion(suggestion) {
+      document.getElementById('code-editor').value += '\n' + suggestion;
+      document.getElementById('code-suggestions').innerHTML = '';
+      document.getElementById('code-query').value = '';
+    }
+
+    // Update analytics when tasks/snippets change
+    const originalAddTask = addTask;
+    addTask = function() {
+      originalAddTask();
+      setTimeout(updateAnalytics, 100);
+    };
+
+    const originalAddSnippet = addSnippet;
+    addSnippet = function() {
+      originalAddSnippet();
+      setTimeout(updateAnalytics, 100);
+    };
+
+    // Initialize mood history
+    updateMoodHistory();
+  </script>
+</body>
+</html>

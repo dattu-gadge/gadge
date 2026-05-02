@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event 2026</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; background: #080c22; color: #fff; }
+    .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; text-align: center; background: linear-gradient(125deg, #3b82f6 0%, #8b5cf6 40%, #ec4899 100%); background-size: 200% 200%; animation: heroShift 12s ease infinite; }
+    @keyframes heroShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 1rem; letter-spacing: 0.05em; }
+    .hero p { max-width: 680px; margin: 0 auto 1.8rem; color: rgba(255,255,255,0.92); font-size: 1.1rem; }
+    .hero .btn { display: inline-block; padding: 1rem 2rem; border-radius: 999px; background: rgba(255,255,255,0.95); color: #111827; font-weight: 700; text-decoration: none; transition: transform 0.3s, box-shadow 0.3s; }
+    .hero .btn:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(15,23,42,0.18); }
+    .countdown { display: grid; grid-template-columns: repeat(4, minmax(100px, 1fr)); gap: 1rem; width: 100%; max-width: 760px; margin-top: 2rem; }
+    .countdown div { background: rgba(255,255,255,0.12); padding: 1.2rem; border-radius: 18px; backdrop-filter: blur(8px); }
+    .countdown div strong { display: block; font-size: 2rem; margin-bottom: 0.3rem; }
+    section { padding: 4rem 1.5rem; }
+    .section-header { max-width: 760px; margin: 0 auto 2rem; text-align: center; }
+    .section-header h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.8rem; }
+    .section-header p { color: rgba(255,255,255,0.8); line-height: 1.8; }
+    .grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .card, .glass-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 24px; padding: 2rem; box-shadow: 0 24px 70px rgba(15,23,42,0.25); backdrop-filter: blur(12px); }
+    .card h3, .glass-card h3 { margin-bottom: 1rem; color: #f8fafc; }
+    .card p, .glass-card p { color: rgba(255,255,255,0.75); line-height: 1.8; }
+    .highlight-list { list-style: none; display: grid; gap: 1rem; margin-top: 1.5rem; }
+    .highlight-list li { display: flex; gap: 0.8rem; align-items: flex-start; }
+    .highlight-list li::before { content: '✔'; color: #22c55e; margin-top: 0.2rem; }
+    .schedule-item { display: grid; gap: 0.8rem; margin-bottom: 1rem; }
+    .schedule-item strong { color: #f8fafc; }
+    .registration { max-width: 680px; margin: 0 auto; }
+    .registration form { display: grid; gap: 1rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); border-radius: 28px; padding: 2rem; }
+    .registration input, .registration textarea, .registration button { border: none; border-radius: 18px; font: inherit; }
+    .registration input, .registration textarea { padding: 1rem 1.2rem; background: rgba(255,255,255,0.1); color: #f8fafc; }
+    .registration textarea { min-height: 160px; resize: vertical; }
+    .registration button { background: linear-gradient(135deg, #fbbf24, #f97316); color: #111827; padding: 1rem 1.5rem; font-weight: 700; cursor: pointer; transition: transform 0.25s ease; }
+    .registration button:hover { transform: translateY(-2px); }
+    .gallery { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .gallery img { display: block; width: 100%; border-radius: 24px; box-shadow: 0 24px 50px rgba(15,23,42,0.25); }
+    .testimonials { display: grid; gap: 1.5rem; }
+    .testimonial { background: rgba(255,255,255,0.08); border-radius: 24px; padding: 2rem; border: 1px solid rgba(255,255,255,0.12); }
+    .testimonial p { color: rgba(255,255,255,0.82); line-height: 1.8; }
+    .footer { text-align: center; color: rgba(255,255,255,0.65); padding: 2rem 1rem; }
+    @media (max-width: 640px) { .countdown { grid-template-columns: repeat(2, minmax(100px, 1fr)); } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <h1>Event 2026</h1>
+      <p>Celebrate innovation, design, and developer excellence at the year’s most exciting tech festival.</p>
+      <div class="countdown" id="countdown">
+        <div><strong id="days">0</strong>Days</div>
+        <div><strong id="hours">0</strong>Hours</div>
+        <div><strong id="minutes">0</strong>Minutes</div>
+        <div><strong id="seconds">0</strong>Seconds</div>
+      </div>
+      <a href="#register" class="btn">Reserve Your Seat</a>
+    </header>
+
+    <section>
+      <div class="section-header">
+        <h2>Why this event matters</h2>
+        <p>Event 2026 brings together creators, coders, and brand builders for three days of expert talks, hands-on workshops, and unmatched learning opportunities.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Interactive Workshops</h3>
+          <p>Learn by doing with practical workshops on responsive UI, accessibility, and product design.</p>
+        </div>
+        <div class="card">
+          <h3>World-Class Speakers</h3>
+          <p>Hear from industry leaders in frontend, backend, branding, and digital transformation.</p>
+        </div>
+        <div class="card">
+          <h3>Networking Lounge</h3>
+          <p>Build meaningful connections with peers, mentors, and hiring managers.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>What you’ll experience</h2>
+        <p>From product showcases to career sessions, every part of Event 2026 is built to help you launch bigger ideas and better projects.</p>
+      </div>
+      <ul class="highlight-list">
+        <li>Responsive design demos and live site builds</li>
+        <li>Career growth guidance for developers and designers</li>
+        <li>Premium branded event experiences with polished visuals</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>Event agenda</h2>
+        <p>Three days of curated sessions, hands-on labs, and creative experiences.</p>
+      </div>
+      <div class="grid">
+        <div class="glass-card">
+          <h3>Day 1</h3>
+          <div class="schedule-item"><strong>09:00 AM</strong><p>Opening keynote and event orientation.</p></div>
+          <div class="schedule-item"><strong>11:00 AM</strong><p>Responsive web workshop.</p></div>
+          <div class="schedule-item"><strong>02:00 PM</strong><p>Design systems deep dive.</p></div>
+        </div>
+        <div class="glass-card">
+          <h3>Day 2</h3>
+          <div class="schedule-item"><strong>10:00 AM</strong><p>Developer roundtables.</p></div>
+          <div class="schedule-item"><strong>01:00 PM</strong><p>Brand identity lab.</p></div>
+          <div class="schedule-item"><strong>04:00 PM</strong><p>Networking and mentorship sessions.</p></div>
+        </div>
+        <div class="glass-card">
+          <h3>Day 3</h3>
+          <div class="schedule-item"><strong>11:00 AM</strong><p>Career strategy and growth talks.</p></div>
+          <div class="schedule-item"><strong>02:00 PM</strong><p>Product showcase and demo stage.</p></div>
+          <div class="schedule-item"><strong>05:00 PM</strong><p>Closing celebration.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="register">
+      <div class="section-header">
+        <h2>Register now</h2>
+        <p>Secure your spot at Event 2026 and receive updates directly to your inbox.</p>
+      </div>
+      <div class="registration">
+        <form id="registrationForm">
+          <input type="text" placeholder="Full Name" required>
+          <input type="email" placeholder="Email Address" required>
+          <input type="tel" placeholder="Phone Number" required>
+          <textarea placeholder="What would you like to learn most at the event?" required></textarea>
+          <button type="submit">Submit Registration</button>
+        </form>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>Gallery</h2>
+        <p>Preview the event experience with real visuals from tech meetups and creative showcases.</p>
+      </div>
+      <div class="gallery">
+        <img src="image1.png" alt="Stage presentation" loading="lazy">
+        <img src="image.png" alt="Workshop session" loading="lazy">
+        <img src="image3.png" alt="Networking area" loading="lazy">
+      </div>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>Testimonials</h2>
+        <p>Attendee feedback from previous events and workshops.</p>
+      </div>
+      <div class="testimonials">
+        <div class="testimonial">
+          <p>“Event 2026 exceeded my expectations. The responsive design workshop was practical, creative, and super engaging.”</p>
+          <p style="margin-top:1rem; font-weight:700;">— Priya M.</p>
+        </div>
+        <div class="testimonial">
+          <p>“I loved the speaker lineup and the networking opportunities. This event is ideal for builders who want to grow fast.”</p>
+          <p style="margin-top:1rem; font-weight:700;">— Arjun K.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Event 2026. Crafted by Dattu Gadge.</p>
+  </footer>
+
+  <div id="popup" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.8); justify-content:center; align-items:center;">
+    <div style="background:#111827; padding:2rem; border-radius:24px; text-align:center; max-width:420px; width:90%;">
+      <h2 style="margin-bottom:1rem;">Registration received!</h2>
+      <p style="margin-bottom:1.5rem; color:rgba(255,255,255,0.8);">You’re registered for Event 2026. We’ll email your ticket details soon.</p>
+      <button onclick="closePopup()" style="background:#f97316; color:#111827; border:none; padding:0.9rem 1.5rem; border-radius:18px; cursor:pointer;">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const updateCountdown = () => {
+      const target = new Date('June 15, 2026 09:00:00').getTime();
+      const now = Date.now();
+      const diff = target - now;
+      if (diff < 0) return;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = hours;
+      document.getElementById('minutes').textContent = minutes;
+      document.getElementById('seconds').textContent = seconds;
+    };
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    document.getElementById('registrationForm').addEventListener('submit', event => {
+      event.preventDefault();
+      document.getElementById('popup').style.display = 'flex';
+      event.target.reset();
+    });
+
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
